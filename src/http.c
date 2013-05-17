@@ -3,7 +3,6 @@
 
 #define HTTP_URL_KEY 0xFFFF
 #define HTTP_STATUS_KEY 0xFFFE
-#define HTTP_SUCCESS_KEY 0xFFFD
 #define HTTP_COOKIE_KEY 0xFFFC
 #define HTTP_CONNECT_KEY 0xFFFB
 #define HTTP_USE_GET_KEY 0xFFFA
@@ -22,10 +21,7 @@
 #define HTTP_LOCATION_KEY 0xFFE0
 #define HTTP_LATITUDE_KEY 0xFFE1
 #define HTTP_LONGITUDE_KEY 0xFFE2
-#define HTTP_ACCURACY_KEY 0xFFE3
-#define HTTP_SPEED_KEY 0xFFE4
-#define HTTP_BEARING_KEY 0xFFE5
-#define HTTP_ALTITUDE_KEY 0xFFE6
+#define HTTP_ALTITUDE_KEY 0xFFE3
 
 static bool callbacks_registered;
 static AppMessageCallbacksNode app_callbacks;
