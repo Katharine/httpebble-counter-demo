@@ -149,7 +149,7 @@ static void app_received_cookie_delete_response(int32_t request_id, void* contex
 	}
 }
 
-static void app_received_time(uint32_t unixtime, DictionaryIterator *iter) {
+static void app_received_time(uint32_t unixtime, DictionaryIterator *iter, void* context) {
 	if(!http_callbacks.time) return;
 	int32_t utc_offset;
 	bool is_dst;
@@ -163,19 +163,19 @@ static void app_received_time(uint32_t unixtime, DictionaryIterator *iter) {
 	tuple = dict_find(iter, HTTP_TZ_NAME_KEY);
 	if(!tuple) return;
 	tz_name = tuple->value->cstring;
-	http_callbacks.time(utc_offset, is_dst, unixtime, tz_name);
+	http_callbacks.time(utc_offset, is_dst, unixtime, tz_name, context);
 }
 
+// Handy helper for getting floats out of ints.
 struct alias_float {
 	float f;
 } __attribute__((__may_alias__));
 
-// Handy helper for this
 float floatFromUint32(uint32_t value) {
 	return ((struct alias_float*)&value)->f;
 }
 
-static void app_received_location(uint32_t accuracy_int, DictionaryIterator *iter) {
+static void app_received_location(uint32_t accuracy_int, DictionaryIterator *iter, void* context) {
 	if(!http_callbacks.location) return;
 	float accuracy = floatFromUint32(accuracy_int);
 	float latitude = 0.f;
@@ -199,7 +199,7 @@ static void app_received_location(uint32_t accuracy_int, DictionaryIterator *ite
 			break;
 		}
 	} while((tuple = dict_read_next(iter)));
-	http_callbacks.location(latitude, longitude, altitude, accuracy);	
+	http_callbacks.location(latitude, longitude, altitude, accuracy, context);	
 }
 
 static void app_received(DictionaryIterator* received, void* context) {
@@ -214,13 +214,13 @@ static void app_received(DictionaryIterator* received, void* context) {
 	// Time response (special: no app id)
 	tuple = dict_find(received, HTTP_TIME_KEY);
 	if(tuple) {
-		app_received_time(tuple->value->uint32, received);
+		app_received_time(tuple->value->uint32, received, context);
 		return;
 	}
 	// Location response (special: no app id)
 	tuple = dict_find(received, HTTP_LOCATION_KEY);
 	if(tuple) {
-		app_received_location(tuple->value->uint32, received);
+		app_received_location(tuple->value->uint32, received, context);
 		return;
 	}
 	// Check for the app id
